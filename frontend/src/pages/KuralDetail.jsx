@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { addToGuestWishlist, removeFromGuestWishlist, isInGuestWishlist } from '../utils/localStorage';
 import Navbar from '../components/Navbar';
+import { Volume2 } from "lucide-react";
 
 const KuralDetail = () => {
   const { id } = useParams();
@@ -22,14 +23,12 @@ const KuralDetail = () => {
         const response = await axios.get(`${API_URL}/api/kurals/${id}`);
         setKural(response.data);
 
-        // Fetch adhigaram info
         const adhigaramResponse = await axios.get(`${API_URL}/api/adhigarams`);
         const adhigaramData = adhigaramResponse.data.find(
           a => a.number === response.data.adhigaramNumber
         );
         setAdhigaram(adhigaramData);
 
-        // Check if completed/wishlisted
         if (isAuthenticated) {
           const userResponse = await axios.get(`${API_URL}/api/users/me`);
           setIsCompleted(
@@ -49,6 +48,29 @@ const KuralDetail = () => {
 
     fetchKural();
   }, [id, API_URL, isAuthenticated]);
+
+  // ✅ SPEECH FUNCTION
+  const speakKural = () => {
+    if (!kural) return;
+
+    const tamilText = kural.tamilText;
+    const meaning = kural.purul;
+    const combinedText = `${tamilText}. பொருள்: ${meaning}`;
+
+    // Stop any ongoing speech first
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(combinedText);
+    utterance.lang = "ta-IN"; // Tamil if available
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    const voices = window.speechSynthesis.getVoices();
+    const tamilVoice = voices.find(v => v.lang.startsWith("ta"));
+    if (tamilVoice) utterance.voice = tamilVoice;
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleToggleComplete = async () => {
     if (!isAuthenticated) {
@@ -177,9 +199,18 @@ const KuralDetail = () => {
 
         {/* Main Card */}
         <div className="bg-white rounded-xl shadow-card p-8 md:p-12">
-          {/* Kural Number */}
-          <div className={`inline-block px-4 py-2 rounded-full bg-${getPaalColor(kural.paal)} text-white font-bold mb-6`}>
-            குறள் #{kural.number}
+          {/* Kural Number + Speaker */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`inline-block px-4 py-2 rounded-full bg-${getPaalColor(kural.paal)} text-white font-bold`}>
+              குறள் #{kural.number}
+            </div>
+            <button
+              onClick={speakKural}
+              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-sm transition"
+              title="Listen to Kural"
+            >
+              <Volume2 className="w-6 h-6 text-gray-700" />
+            </button>
           </div>
 
           {/* Kural Text */}
@@ -229,7 +260,6 @@ const KuralDetail = () => {
             </button>
           </div>
 
-          {/* Guest Mode Notice */}
           {!isAuthenticated && (
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
               <p className="text-sm text-blue-800">

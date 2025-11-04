@@ -109,9 +109,10 @@ const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center space-x-2 hover:opacity-80"
                 >
-                  <div className="w-8 h-8 rounded-full bg-fbBlue text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-1xl font-bold">
                     {user?.name?.charAt(0).toUpperCase()}
                   </div>
+
                   <span className="text-textDark font-medium hidden sm:block">
                     {user?.name}
                   </span>

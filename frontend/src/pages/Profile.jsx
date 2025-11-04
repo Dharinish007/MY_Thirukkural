@@ -54,9 +54,10 @@ const Profile = () => {
         <div className="bg-white rounded-xl shadow-card p-8 mb-8">
           <div className="flex items-center gap-6">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-fbBlue text-white flex items-center justify-center text-4xl font-bold">
+            <div className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl font-bold">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
+
 
             {/* Info */}
             <div>

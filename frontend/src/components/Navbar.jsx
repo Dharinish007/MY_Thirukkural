@@ -151,11 +151,13 @@ const Navbar = () => {
               </div>
             ) : (
               <Link
-                to="/login"
-                className="bg-fbBlue text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600"
-              >
-                Login
-              </Link>
+  to="/login"
+  className="bg-[#1877F2] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#166FE5] active:bg-[#145DDC] shadow-md transition-all duration-200"
+>
+  Login
+</Link>
+
+
             )}
           </div>
         </div>

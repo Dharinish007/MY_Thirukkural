@@ -13,7 +13,8 @@ export default {
         surface: '#FFFFFF',  // cards, modals
         textDark: '#111827', // rich neutral text
         textLight: '#6B7280', // subtle gray text
-        border: '#E5E7EB',   // soft neutral border
+        border: '#E5E7EB',  // soft neutral border
+        fbBlue: '#1877F2',
 
         // 💚 Arathupal — Vibrant Emerald Harmony
         arathu: {
@@ -64,7 +65,7 @@ export default {
         sans: ['Inter', 'Poppins', 'sans-serif'],
         display: ['Poppins', 'Inter', 'sans-serif'],
       },
-
+      
       boxShadow: {
         soft: '0 4px 12px rgba(0, 0, 0, 0.08)',
         card: '0 6px 20px rgba(0, 0, 0, 0.12)',

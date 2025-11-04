@@ -1,81 +1,66 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useState, useEffect } from 'react';
-import { getGuestWishlist } from '../utils/localStorage';
-import axios from 'axios';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useState, useEffect } from "react";
+import { getGuestWishlist } from "../utils/localStorage";
+import axios from "axios";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout, API_URL } = useAuth();
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [newItemsCount, setNewItemsCount] = useState(0); // how many new items since last view
+  const [newItemsCount, setNewItemsCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper: read last seen count from localStorage (0 if missing or invalid)
-  const readLastSeen = () => {
-    const v = localStorage.getItem('lastSeenWishlistCount');
-    const n = parseInt(v ?? '0', 10);
-    return Number.isNaN(n) ? 0 : n;
-  };
-
-  // Helper: write last seen count to localStorage
-  const writeLastSeen = (count) => {
-    localStorage.setItem('lastSeenWishlistCount', String(count));
-  };
-
-  // Fetch wishlist count and compute new items
+  // Fetch wishlist count and compute new items since last seen
   useEffect(() => {
-    let mounted = true;
     const fetchWishlist = async () => {
       try {
-        let count = 0;
+        let wishlist = [];
+
         if (isAuthenticated) {
           const response = await axios.get(`${API_URL}/api/users/me`);
-          count = response.data.wishlist?.length || 0;
+          wishlist = response.data.wishlist || [];
         } else {
-          const guestWishlist = getGuestWishlist();
-          count = guestWishlist.length;
+          wishlist = getGuestWishlist();
         }
 
-        if (!mounted) return;
+        const count = wishlist.length;
         setWishlistCount(count);
 
-        const lastSeen = readLastSeen();
+        // Read the previously seen wishlist count
+        const lastSeen = parseInt(localStorage.getItem("wishlist_seen_count") || "0", 10);
+
+        // If there are new additions
         if (count > lastSeen) {
           setNewItemsCount(count - lastSeen);
         } else {
           setNewItemsCount(0);
         }
       } catch (err) {
-        console.error('Error fetching wishlist count:', err);
+        console.error("Error fetching wishlist count:", err);
       }
     };
 
-    // initial fetch
     fetchWishlist();
 
-    // poll every 3s (optional). If you don't want polling, remove interval.
-    const interval = setInterval(fetchWishlist, 3000);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
+    // Optional polling every 2 seconds to reflect real-time changes
+    const interval = setInterval(fetchWishlist, 2000);
+    return () => clearInterval(interval);
   }, [isAuthenticated, API_URL]);
 
-  // When user opens /wishlist, mark current count as seen (so badge disappears)
+  // Reset notification when user visits wishlist page
   useEffect(() => {
-    if (location.pathname === '/wishlist') {
-      writeLastSeen(wishlistCount);
+    if (location.pathname === "/wishlist") {
+      localStorage.setItem("wishlist_seen_count", String(wishlistCount));
       setNewItemsCount(0);
     }
-    // we intentionally depend on location.pathname and wishlistCount
   }, [location.pathname, wishlistCount]);
 
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -97,7 +82,7 @@ const Navbar = () => {
             >
               <svg
                 className="w-6 h-6"
-                fill={wishlistCount > 0 ? 'currentColor' : 'none'}
+                fill={wishlistCount > 0 ? "currentColor" : "none"}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -109,7 +94,7 @@ const Navbar = () => {
                 />
               </svg>
 
-              {/* Badge: show only the number of NEW items (added after last seen) */}
+              {/* Badge shows only newly added favorites */}
               {newItemsCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-kamathu-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {newItemsCount}

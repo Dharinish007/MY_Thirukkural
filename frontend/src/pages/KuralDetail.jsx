@@ -4,18 +4,21 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { addToGuestWishlist, removeFromGuestWishlist, isInGuestWishlist } from '../utils/localStorage';
 import Navbar from '../components/Navbar';
-import { Volume2 } from "lucide-react";
+import { Volume2, RefreshCw } from "lucide-react"; // Refresh icon
 
 const KuralDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { API_URL, isAuthenticated } = useAuth();
-  
+
   const [kural, setKural] = useState(null);
   const [adhigaram, setAdhigaram] = useState(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // ✅ State for cycling purul
+  const [currentPurul, setCurrentPurul] = useState("mv"); // MB default
 
   useEffect(() => {
     const fetchKural = async () => {
@@ -49,19 +52,35 @@ const KuralDetail = () => {
     fetchKural();
   }, [id, API_URL, isAuthenticated]);
 
-  // ✅ SPEECH FUNCTION
+  // ✅ Get the correct purul dynamically
+ const getCurrentPurulText = () => {
+  if (!kural) return "";
+
+  switch (currentPurul) {
+    case "mv":
+      return kural.mv || "No MB meaning available";
+    case "sp":
+      return kural.sp || "No SP meaning available";
+    case "mk":
+      return kural.mk || "No MK meaning available";
+    default:
+      return kural.mv || "No MB meaning available";
+  }
+};
+
+
+
+  // ✅ Speech function
   const speakKural = () => {
     if (!kural) return;
 
     const tamilText = kural.tamilText;
-    const meaning = kural.purul;
+    const meaning = getCurrentPurulText();
     const combinedText = `${tamilText}. பொருள்: ${meaning}`;
 
-    // Stop any ongoing speech first
     window.speechSynthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(combinedText);
-    utterance.lang = "ta-IN"; // Tamil if available
+    utterance.lang = "ta-IN";
     utterance.rate = 0.9;
     utterance.pitch = 1;
 
@@ -72,6 +91,14 @@ const KuralDetail = () => {
     window.speechSynthesis.speak(utterance);
   };
 
+  // ✅ Cycle purul MB -> SP -> MK
+  const handleCyclePurul = () => {
+    if (currentPurul === 'mv') setCurrentPurul('sp');
+    else if (currentPurul === 'sp') setCurrentPurul('mk');
+    else setCurrentPurul('mv');
+  };
+
+  // Toggle complete
   const handleToggleComplete = async () => {
     if (!isAuthenticated) {
       alert('Please login to track your progress');
@@ -92,6 +119,7 @@ const KuralDetail = () => {
     }
   };
 
+  // Toggle wishlist
   const handleToggleWishlist = async () => {
     try {
       if (isAuthenticated) {
@@ -177,7 +205,6 @@ const KuralDetail = () => {
   return (
     <div className={`min-h-screen ${getPaalBgColor(kural.paal)}`}>
       <Navbar />
-
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Top Bar */}
         <div className="flex items-center justify-between mb-8">
@@ -220,19 +247,27 @@ const KuralDetail = () => {
             </div>
           </div>
 
-          {/* Meaning */}
+          {/* Meaning / Purul */}
           <div className="mb-8">
-            <h3 className="text-lg font-bold text-textDark mb-3 tamil-text">பொருள்:</h3>
+            <h3 className="text-lg font-bold text-textDark mb-3 tamil-text flex items-center justify-between">
+              <span>பொருள்:</span>
+              <button
+                onClick={handleCyclePurul}
+                className="p-1 bg-fbBlue text-white rounded-full hover:bg-blue-600 transition"
+                title={`Show next Purul (currently ${currentPurul})`}
+              >
+                <RefreshCw className="w-5 h-5" />
+              </button>
+            </h3>
             <div className="bg-bgGray rounded-lg p-6">
               <p className="text-lg text-textDark leading-relaxed tamil-text">
-                {kural.purul}
+                {getCurrentPurulText()}
               </p>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Complete Button */}
             <button
               onClick={handleToggleComplete}
               className={`py-4 px-6 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
@@ -246,7 +281,6 @@ const KuralDetail = () => {
               {isCompleted ? 'Completed' : 'Mark as Complete'}
             </button>
 
-            {/* Wishlist Button */}
             <button
               onClick={handleToggleWishlist}
               className={`py-4 px-6 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${

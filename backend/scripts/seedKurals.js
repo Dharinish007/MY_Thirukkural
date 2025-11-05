@@ -53,15 +53,14 @@ const seedDatabase = async () => {
       line1: k.Line1,
       line2: k.Line2,
       translation: k.Translation,
-      mv: k.mv,
-      sp: k.sp,
-      mk: k.mk,
       explanation: k.explanation,
       couplet: k.couplet,
       transliteration1: k.transliteration1,
       transliteration2: k.transliteration2,
       paal: determinePaal(k.Number),
-      purul: determinePurul(k.Number),
+          mv: k.mv,
+          sp: k.sp,
+          mk: k.mk,  
     }));
 
     // Insert Kurals

@@ -118,6 +118,7 @@ const Profile = () => {
                 total={stats?.byPaal?.arathupal?.total || 380}
                 color="arathu"
               />
+              {console.log(stats?.byPaal?.arathupal?.completed)}
             </div>
 
             {/* Porutpal */}

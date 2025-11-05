@@ -12,14 +12,14 @@ const { adhigarams, kural: kuralsJSON } = require('./thirukkural.json'); // note
  * Optional mapping functions if you want correct values per kural
  */
 const determinePaal = (number) => {
-  if (number <= 38) return "அறத்துப்பால்";
-  else if (number <= 108) return "பொருட்பால்";
-  else return "காமத்துப்பால்";
+  if (number <= 380) return "Arathupal";
+  else if (number <= 1080) return "Porutpal";
+  else return "Kamathupal";
 };
 
 const determinePurul = (number) => {
-  if (number <= 38) return "அறம்";
-  else if (number <= 108) return "பொருள்";
+  if (number <= 380) return "அறம்";
+  else if (number <= 1080) return "பொருள்";
   else return "இன்பம்";
 };
 
@@ -58,9 +58,9 @@ const seedDatabase = async () => {
       transliteration1: k.transliteration1,
       transliteration2: k.transliteration2,
       paal: determinePaal(k.Number),
-          mv: k.mv,
-          sp: k.sp,
-          mk: k.mk,  
+      mv: k.mv,
+      sp: k.sp,
+      mk: k.mk,  
     }));
 
     // Insert Kurals

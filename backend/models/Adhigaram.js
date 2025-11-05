@@ -19,7 +19,7 @@ const adhigaramSchema = new mongoose.Schema({
   paal: {
     type: String,
     required: true,
-    enum: ['Arathupal', 'Porutpal', 'Kamathupal']
+    enum: ['Arathupal', 'Porutpal', 'Kamathupal'] // ✅ Matches your seed data exactly
   }
 });
 

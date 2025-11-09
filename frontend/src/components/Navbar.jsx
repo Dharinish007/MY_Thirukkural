@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { getGuestWishlist } from "../utils/localStorage";
+import { Search, Bell } from "lucide-react";
 import axios from "axios";
 
 const Navbar = () => {
@@ -75,6 +76,30 @@ const Navbar = () => {
 
           {/* Right side */}
           <div className="flex items-center space-x-6">
+
+  {/* Search Icon */}
+  <button
+    onClick={() => navigate("/search")}
+    className="text-gray-600 hover:text-gray-900 transition"
+  >
+    <Search className="w-6 h-6" />
+  </button>
+
+  {/* Notification Icon */}
+  <button
+    onClick={() => navigate("/notifications")}
+    className="relative text-gray-600 hover:text-gray-900 transition"
+  >
+    <Bell className="w-6 h-6" />
+
+    {/* Notification badge */}
+    {newItemsCount > 0 && (
+      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+        {newItemsCount}
+      </span>
+    )}
+  </button>
+
             {/* Wishlist Icon */}
             <Link
               to="/wishlist"

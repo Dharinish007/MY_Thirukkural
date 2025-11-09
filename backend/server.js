@@ -10,6 +10,13 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const kuralRoutes = require('./routes/kurals');
 const userRoutes = require('./routes/users');
+const searchRoutes = require('./routes/search');
+const notificationRoutes = require('./routes/notifications');
+const reelsRoutes = require('./routes/reels');
+const playlistRoutes = require('./routes/playlists');
+
+// Import notification scheduler
+const { initializeScheduler } = require('./utils/notificationScheduler');
 
 const app = express();
 
@@ -22,6 +29,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api', kuralRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reels', reelsRoutes);
+app.use('/api/playlists', playlistRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -41,6 +52,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
+    
+    // Initialize notification scheduler
+    initializeScheduler();
+    
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });

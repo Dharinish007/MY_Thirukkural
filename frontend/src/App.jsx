@@ -13,6 +13,10 @@ import Completed from './pages/Completed';
 import Profile from './pages/Profile';
 import Quiz from './pages/Quiz';
 import Reels from './pages/Reels';
+import Search from './pages/Search';
+import Notifications from './pages/Notifications';
+import ReelsEnhanced from './pages/ReelsEnhanced';
+import Playlists from './pages/Playlists';
 
 function App() {
   return (
@@ -28,6 +32,9 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/reels" element={<Reels />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/reels-enhanced" element={<ReelsEnhanced />} />
+          <Route path="/playlists" element={<Playlists />} />
 
           {/* Protected Routes */}
           <Route
@@ -43,6 +50,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
               </ProtectedRoute>
             }
           />
